@@ -1,27 +1,26 @@
-package main;
 import java.util.List;
 
 public class Instrucao {
 	
-	private Interpretador interpretador;
+	private Comando comando;
 	private List<String> argumentos;
 	private List<Instrucao> instrucoes;
 	
 	
-	public Instrucao(Interpretador interpretador, List<String> argumentos, List<Instrucao> instrucoes) {
+	public Instrucao(Comando comando, List<String> argumentos, List<Instrucao> instrucoes) {
 		super();
-		this.interpretador = interpretador;
+		this.comando = comando;
 		this.argumentos = argumentos;
 		this.instrucoes = instrucoes;
 	}
 
-	public Interpretador getComando() {
-		return interpretador;
+	public Comando getComando() {
+		return comando;
 	}
 
 
-	public void setComando(Interpretador interpretador) {
-		this.interpretador = interpretador;
+	public void setComando(Comando comando) {
+		this.comando = comando;
 	}
 
 
