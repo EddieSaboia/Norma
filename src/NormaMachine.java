@@ -2,19 +2,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Norma {
-	private List<Register> registradores;
-	private List<Instrucao> instrucoes;
+public class NormaMachine {
+	private List<Register> registers;
+	private List<NormaInstruction> instructions;
 	private int pularBlocoIfWhile;
 	private Integer valorGoToIfWhile;
 
-	public Norma() {
-		this.registradores = new ArrayList<>();
-		this.instrucoes = new ArrayList<>();
+	public NormaMachine() {
+		this.registers = new ArrayList<>();
+		this.instructions = new ArrayList<>();
 	}
 	
 	public Register getRegister(String name) {
-		for (Register register:registradores) {
+		for (Register register:registers) {
 			if (register.getName().equals(name)) {
 				return register;
 			}
@@ -24,9 +24,9 @@ public class Norma {
 
 	public void acao() throws Exception {
 
-		for (int i = 0; i < instrucoes.size(); i++) {
+		for (int i = 0; i < instructions.size(); i++) {
 
-			Instrucao instrucao = instrucoes.get(i);
+			NormaInstruction instrucao = instructions.get(i);
 			Comando comando = instrucao.getComando();
 
 			switch (comando) {
@@ -50,32 +50,33 @@ public class Norma {
 //					valorGoToIfWhile = null;
 //				}
 //				break;
-			case ADD:
-				executarInstrucaoAdd(instrucao);
-				break;
+//			case ADD:
+//				executarInstrucaoAdd(instrucao);
+//				break;
 			default:
 				executarInstrucao(instrucao);
 			}
 		}
 	}
 	
-	public void executarInstrucaoAdd(Instrucao instrucao) {
-		System.out.println("ADD " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
-		
-		Register a = getRegister(instrucao.getArgumentos().get(0));
-		Register b = getRegister(instrucao.getArgumentos().get(1));
-		while (b.getValue()>0) {
-			a.setValue(a.getValue()+1);;
-			b.setValue(b.getValue()-1);;
-		}
-		imprimirRegistradores();
-	}
+//	public void executarInstrucaoAdd(NormaInstruction instrucao) {
+//		System.out.println("ADD " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
+//		
+//		Register a = getRegister(instrucao.getArgumentos().get(0));
+//		Register b = getRegister(instrucao.getArgumentos().get(1));
+//		while (b.getValue()>0) {
+//			a.setValue(a.getValue()+1);;
+//			b.setValue(b.getValue()-1);;
+//			imprimirRegistradores();
+//		}
+////		imprimirRegistradores();
+//	}
 	
-	public int goTo(Instrucao instucao) {
+	public int goTo(NormaInstruction instucao) {
 
-		for (int i = 0; i < instrucoes.size(); i++) {
+		for (int i = 0; i < instructions.size(); i++) {
 
-			Instrucao interna = instrucoes.get(i);
+			NormaInstruction interna = instructions.get(i);
 
 			if (interna.getArgumentos().get(0).equals(":" + instucao.getArgumentos().get(0))) {
 				return i;
@@ -165,13 +166,13 @@ public class Norma {
 //	}
 	
 	
-	public Instrucao procurarInstrucaoElse(Instrucao instrucao) {
+	public NormaInstruction procurarInstrucaoElse(NormaInstruction instrucao) {
 
-		List<Instrucao> instrucoesInternaIf = instrucao.getInstrucoes();
+		List<NormaInstruction> instrucoesInternaIf = instrucao.getInstrucoes();
 
 		for (int i = 0; i < instrucoesInternaIf.size(); i++) {
 
-			Instrucao instrucaoInternaIf = instrucoesInternaIf.get(i);
+			NormaInstruction instrucaoInternaIf = instrucoesInternaIf.get(i);
 
 			if (instrucaoInternaIf.getComando() == Comando.ELSE) {
 				return instrucaoInternaIf;
@@ -183,7 +184,7 @@ public class Norma {
 
 	}
 
-	public void executarInstrucao(Instrucao instrucao) throws Exception {
+	public void executarInstrucao(NormaInstruction instrucao) throws Exception {
 		Comando comando = instrucao.getComando();
 		
 		Register register;
@@ -220,36 +221,38 @@ public class Norma {
 			System.out.println("SET " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
 			
 			String name = instrucao.getArgumentos().get(0);
-			int value = Integer.parseInt(instrucao.getArgumentos().get(1));
-			
-			Register newRegister = new Register(name, value);
-			
-			registradores.add(newRegister);
-			
-//			
-//			
-//			registradores[Integer.parseInt(instrucao.getArgumentos().get(0))] = Integer
-//					.parseInt(instrucao.getArgumentos().get(1));
+			Register firstRegister = getRegister(instrucao.getArgumentos().get(0));
+			if (instrucao.getArgumentos().get(1).matches(".*[0123456789-].*")) { //if second value is a number
+				int value = Integer.parseInt(instrucao.getArgumentos().get(1));
+				if (firstRegister == null) {
+					firstRegister = new Register(name, value);
+					registers.add(firstRegister);
+				} else {
+					firstRegister.setValue(value);
+				}
+			} else { //if second value is not a number, it's a register
+				Register otherRegister = getRegister(instrucao.getArgumentos().get(1));
+				if (firstRegister == null) {
+					firstRegister = new Register(name, otherRegister.getValue());
+					registers.add(firstRegister);
+				} else {
+					firstRegister.setValue(otherRegister.getValue());
+				}
+			}
 			imprimirRegistradores();
 			break;
-//		case ADD:
-//			System.out.println("ADD " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
-//			
-////			int a = registradores[Integer.parseInt(instrucao.getArgumentos().get(0))];
-////			int b = registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];
-//			
-//			while (registradores[Integer.parseInt(instrucao.getArgumentos().get(1))]>0) {
-//						registradores[Integer.parseInt(instrucao.getArgumentos().get(0))]++;
-//				
-//						registradores[Integer.parseInt(instrucao.getArgumentos().get(1))]--;
-//			}
-////			
-////			
-////			registradores[Integer.parseInt(instrucao.getArgumentos().get(0))] = registradores[Integer
-////					.parseInt(instrucao.getArgumentos().get(0))]
-////					+ registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];
+		case ADD:
+			System.out.println("ADD " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
+			
+			Register a = getRegister(instrucao.getArgumentos().get(0));
+			Register b = getRegister(instrucao.getArgumentos().get(1));
+			a.setValue(a.getValue() + b.getValue());
+			imprimirRegistradores();
+//			registradores[Integer.parseInt(instrucao.getArgumentos().get(0))] = registradores[Integer
+//					.parseInt(instrucao.getArgumentos().get(0))]
+//					+ registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];
 //			imprimirRegistradores();
-//			break;
+			break;
 		default:
 			break;
 		}
@@ -263,7 +266,7 @@ public class Norma {
 			e.printStackTrace();
 		}
 		
-		for (Register register: registradores) {
+		for (Register register: registers) {
 			System.out.println(register.getName() + ":" + register.getValue() + " ");
 		}
 
@@ -286,7 +289,7 @@ public class Norma {
 			validarComando(instrucao);
 			validarArgumentos(linha);
 
-			Instrucao inst = gerarInstrucao(linha, instucoesString, i);
+			NormaInstruction inst = gerarInstrucao(linha, instucoesString, i);
 
 			if (inst != null) {
 				if (inst.getComando() == Comando.IF || inst.getComando() == Comando.WHILE || inst.getComando() == Comando.ELSE) {
@@ -294,14 +297,14 @@ public class Norma {
 					pularBlocosIfWhile(instucoesString, i);
 					i = i + pularBlocoIfWhile;
 				}
-				instrucoes.add(inst);
+				instructions.add(inst);
 			}
 
 		}
 
 	}
 
-	public Instrucao gerarInstrucao(List<String> linha, List<String> instucoesString, int i) {
+	public NormaInstruction gerarInstrucao(List<String> linha, List<String> instucoesString, int i) {
 		String comando = linha.get(0);
 
 		if (comando.contains(":")) {
@@ -311,35 +314,35 @@ public class Norma {
 		switch (comando) {
 		case "inc":
 			linha.remove(0);
-			return new Instrucao(Comando.INC, linha, null);
+			return new NormaInstruction(Comando.INC, linha, null);
 
 		case "dec":
 			linha.remove(0);
-			return new Instrucao(Comando.DEC, linha, null);
+			return new NormaInstruction(Comando.DEC, linha, null);
 
 		case "set0":
 			linha.remove(0);
-			return new Instrucao(Comando.SETZERO, linha, null);
+			return new NormaInstruction(Comando.SETZERO, linha, null);
 
 		case "is0":
 			linha.remove(0);
-			return new Instrucao(Comando.ISZERO, linha, null);
+			return new NormaInstruction(Comando.ISZERO, linha, null);
 
 		case "goto":
 			linha.remove(0);
-			return new Instrucao(Comando.GOTO, linha, null);
+			return new NormaInstruction(Comando.GOTO, linha, null);
 		case "if":
 			return gerarIntrucaoIfWhile(instucoesString, i, linha);
 		case "while":
 			return gerarIntrucaoIfWhile(instucoesString, i, linha);
 		case "set":
 			linha.remove(0);
-			return new Instrucao(Comando.SET, linha, null);
+			return new NormaInstruction(Comando.SET, linha, null);
 		case "add":
 			linha.remove(0);
-			return new Instrucao(Comando.ADD, linha, null);
+			return new NormaInstruction(Comando.ADD, linha, null);
 		case ":":
-			return new Instrucao(Comando.DOISPONTOS, linha, null);
+			return new NormaInstruction(Comando.DOISPONTOS, linha, null);
 
 		default:
 
@@ -353,8 +356,8 @@ public class Norma {
 //	}
 
 
-	public Instrucao gerarIntrucaoIfWhile(List<String> instucoesString, int i, List<String> linha) {
-		List<Instrucao> instrucoesInternas = new ArrayList<Instrucao>();
+	public NormaInstruction gerarIntrucaoIfWhile(List<String> instucoesString, int i, List<String> linha) {
+		List<NormaInstruction> instrucoesInternas = new ArrayList<NormaInstruction>();
 
 		for (int j = i + 1; j < instucoesString.size(); j++) {
 			String instrucao = instucoesString.get(j);
@@ -383,11 +386,11 @@ public class Norma {
 		linha.remove(0);
 
 		if (comando.equals("if")) {
-			return new Instrucao(Comando.IF, linha, instrucoesInternas);
+			return new NormaInstruction(Comando.IF, linha, instrucoesInternas);
 		} else if(comando.equals("while")) {
-			return new Instrucao(Comando.WHILE, linha, instrucoesInternas);
+			return new NormaInstruction(Comando.WHILE, linha, instrucoesInternas);
 		}else {
-			return new Instrucao(Comando.ELSE, linha, instrucoesInternas);
+			return new NormaInstruction(Comando.ELSE, linha, instrucoesInternas);
 		}
 
 	}

@@ -6,15 +6,16 @@ public class Principal {
 		
 		String codigo = 
 				
-				"set a 2;"
-				      + "set b 8;"
-				 	  + "add a b;"
-				 	  + "set0 a;";
-	 
+				"set a 7;"
+				      + "set b 4;"
+				 	  + "add a b;" 
+				      + "set c -3;"
+				 	  + "add a c;"
+				      + "set b c;";
 	
-		Norma n = new Norma();
-		n.receberInstrucoes(codigo);
-		n.acao();
+		NormaMachine machine = new NormaMachine();
+		machine.receberInstrucoes(codigo);
+		machine.acao();
 	}
 
 }

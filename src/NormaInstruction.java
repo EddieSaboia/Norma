@@ -1,13 +1,13 @@
 import java.util.List;
 
-public class Instrucao {
+public class NormaInstruction {
 	
 	private Comando comando;
 	private List<String> argumentos;
-	private List<Instrucao> instrucoes;
+	private List<NormaInstruction> instrucoes;
 	
 	
-	public Instrucao(Comando comando, List<String> argumentos, List<Instrucao> instrucoes) {
+	public NormaInstruction(Comando comando, List<String> argumentos, List<NormaInstruction> instrucoes) {
 		super();
 		this.comando = comando;
 		this.argumentos = argumentos;
@@ -34,12 +34,12 @@ public class Instrucao {
 	}
 
 
-	public List<Instrucao> getInstrucoes() {
+	public List<NormaInstruction> getInstrucoes() {
 		return instrucoes;
 	}
 
 
-	public void setInstrucoes(List<Instrucao> instrucoes) {
+	public void setInstrucoes(List<NormaInstruction> instrucoes) {
 		this.instrucoes = instrucoes;
 	}
 	
