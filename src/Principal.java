@@ -6,12 +6,21 @@ public class Principal {
 		
 		String codigo = 
 				
-				"set a 7;"
-				      + "set b 4;"
-				 	  + "add a b;" 
-				      + "set c -3;"
-				 	  + "add a c;"
-				      + "set b c;";
+				"set 0 2;"
+					      + "set 1 8;"
+					      + "set 5 0;"
+					      + "set 4 0;"
+					      + "if is0 5;"
+					      + "set 5 5;"
+					      + "endif;"
+					      + "while is0 4;"
+					      + "dec 5;"
+					      + "if is0 5;"
+					      + "inc 4;"
+					      + "endif;"
+					      + "endwhile;"
+					      + "add 0 1;"
+					      + "set0 1;";
 	
 		NormaMachine machine = new NormaMachine();
 		machine.receberInstrucoes(codigo);

@@ -36,23 +36,20 @@ public class NormaMachine {
 			case GOTO:
 				i = goTo(instrucao);
 				break;
-//			case IF:
-//				checarCondicaoIfElse(instrucao);
-//				if(valorGoToIfWhile != null) {
-//					i = valorGoToIfWhile;
-//					valorGoToIfWhile = null;
-//				}
-//				break;
-//			case WHILE:
-//				checarCondicaoWhile(instrucao);
-//				if(valorGoToIfWhile != null) {
-//					i = valorGoToIfWhile;
-//					valorGoToIfWhile = null;
-//				}
-//				break;
-//			case ADD:
-//				executarInstrucaoAdd(instrucao);
-//				break;
+			case IF:
+				checarCondicaoIfElse(instrucao);
+				if(valorGoToIfWhile != null) {
+					i = valorGoToIfWhile;
+					valorGoToIfWhile = null;
+				}
+				break;
+			case WHILE:
+				checarCondicaoWhile(instrucao);
+				if(valorGoToIfWhile != null) {
+					i = valorGoToIfWhile;
+					valorGoToIfWhile = null;
+				}
+				break;
 			default:
 				executarInstrucao(instrucao);
 			}
@@ -89,81 +86,84 @@ public class NormaMachine {
 	}
 
 	
-//	public void checarCondicaoWhile(Instrucao instrucao) throws Exception {
-//		
-//		int registrador = 
-//				registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];
-//		
-//		System.out.println(" WHILE ");
-//
-//		while(registrador == 0) {
-//			
-//			if(valorGoToIfWhile == null) {
-//				execultarCondicaoIfElseWhile(instrucao);
-//				registrador = registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];		
-//			}else {
-//				registrador = 1;
-//			}
-//		}
-//		
-//	}
-//
-//	public void checarCondicaoIfElse(Instrucao instrucao) throws Exception {
-//
+	public void checarCondicaoWhile(NormaInstruction instrucao) throws Exception {
+		
+		Register register = getRegister(instrucao.getArgumentos().get(1));
+		int valorRegistrador = register.getValue();
+		
+		System.out.println(" WHILE ");
+
+		while(valorRegistrador == 0) {
+			
+			if(valorGoToIfWhile == null) {
+				execultarCondicaoIfElseWhile(instrucao);
+				valorRegistrador = register.getValue();//registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];		
+			}else {
+				valorRegistrador = 1;
+			}
+		}
+		
+	}
+
+	public void checarCondicaoIfElse(NormaInstruction instrucao) throws Exception {
+
+		Register register = getRegister(instrucao.getArgumentos().get(1));
+		int valorRegistrador = register.getValue();
+		
 //		int registrador = registradores[Integer.parseInt(instrucao.getArgumentos().get(1))];
-//
-//		if (registrador == 0) {
-//			
-//			System.out.println("IF " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
-//			
-//			execultarCondicaoIfElseWhile(instrucao);
-//
-//		} else {
-//
-//			
-//			Instrucao instrucaoElse = procurarInstrucaoElse(instrucao);
-//
-//			if (instrucaoElse != null) {
-//				
-//				System.out.println("ELSE");
-//				
-//				execultarCondicaoIfElseWhile(instrucaoElse);
-//
-//			}
-//
-//		}
-//
-//	}
+
+		if (valorRegistrador == 0) {
+			
+			System.out.println("IF " + instrucao.getArgumentos().get(0) + " " + instrucao.getArgumentos().get(1));
+			
+			execultarCondicaoIfElseWhile(instrucao);
+
+		} else {
+
+			
+			NormaInstruction instrucaoElse = procurarInstrucaoElse(instrucao);
+
+			if (instrucaoElse != null) {
+				
+				System.out.println("ELSE");
+				
+				execultarCondicaoIfElseWhile(instrucaoElse);
+
+			}
+
+		}
+
+	}
 
 	
-//	public void execultarCondicaoIfElseWhile(Instrucao instrucao) throws Exception {
-//		
-//		List<Instrucao> instrucoesInterna = instrucao.getInstrucoes();
-//
-//		for (int i = 0; i < instrucoesInterna.size(); i++) {
-//
-//			Instrucao instrucaoInterna = instrucoesInterna.get(i);
-//
-//			if (instrucaoInterna.getComando() == Comando.IF) {
-//				checarCondicaoIfElse(instrucaoInterna);
-//			} else if (instrucaoInterna.getComando() == Comando.WHILE) {
-//				checarCondicaoWhile(instrucaoInterna);
-//			} else {
-//
-//				if (instrucaoInterna.getComando() == Comando.ELSE)
-//					continue;
-//				if (instrucaoInterna.getComando() == Comando.GOTO) {
-//					valorGoToIfWhile  = goTo(instrucaoInterna);
-//					break;
-//				}
-//					
-//
-//				executarInstrucao(instrucaoInterna);
-//			}
-//
-//		}
-//		
-//	}
+	public void execultarCondicaoIfElseWhile(NormaInstruction instrucao) throws Exception {
+		
+		List<NormaInstruction> instrucoesInterna = instrucao.getInstrucoes();
+
+		for (int i = 0; i < instrucoesInterna.size(); i++) {
+
+			NormaInstruction instrucaoInterna = instrucoesInterna.get(i);
+
+			if (instrucaoInterna.getComando() == Comando.IF) {
+				checarCondicaoIfElse(instrucaoInterna);
+			} else if (instrucaoInterna.getComando() == Comando.WHILE) {
+				checarCondicaoWhile(instrucaoInterna);
+			} else {
+
+				if (instrucaoInterna.getComando() == Comando.ELSE)
+					continue;
+				if (instrucaoInterna.getComando() == Comando.GOTO) {
+					valorGoToIfWhile  = goTo(instrucaoInterna);
+					break;
+				}
+					
+
+				executarInstrucao(instrucaoInterna);
+			}
+
+		}
+		
+	}
 	
 	
 	public NormaInstruction procurarInstrucaoElse(NormaInstruction instrucao) {
@@ -202,7 +202,7 @@ public class NormaMachine {
 			System.out.println("DEC " + instrucao.getArgumentos().get(0));
 			
 			register = getRegister(instrucao.getArgumentos().get(0));
-			register.setValue(register.getValue()+1);
+			register.setValue(register.getValue()-1);
 //			registradores[Integer.parseInt(instrucao.getArgumentos().get(0))]--;
 			imprimirRegistradores();
 			break;
